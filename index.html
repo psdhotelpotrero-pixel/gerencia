@@ -5,13 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
   <title>Control de Novedades - Gerencia</title>
   <meta name="theme-color" content="#8b5cf6">
-<!-- Favicon e Iconos de la Aplicación -->
-  <link rel="icon" type="image/jpeg" sizes="192x192" href="logo.jpg">
-  <link rel="apple-touch-icon" href="logo.jpg">
 
-  <!-- Vinculación del Manifest PWA -->
-  <link rel="manifest" href="manifest.json">
-  
   <style>
     :root {
       --bg: #f8fafc;
@@ -48,22 +42,6 @@
     header h1 { font-size: clamp(1.1rem, 2vw, 1.4rem); color: #1e293b; font-weight: 800; }
 
     .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    /* ESTILOS DEL PANEL DE TURNO */
-    .shift-panel {
-      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px;
-      padding: clamp(12px, 2vw, 16px); margin-bottom: clamp(14px, 2.5vw, 20px); text-align: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-
-    .shift-timer { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 800; color: #1e40af; margin: 4px 0; font-family: monospace; }
-
-    .btn-shift {
-      width: 100%; max-width: 450px; background-color: var(--primary); color: white; border: none; 
-      padding: clamp(10px, 1.5vw, 12px); border-radius: 8px; font-weight: 700; 
-      font-size: clamp(0.88rem, 1.4vw, 1rem); cursor: pointer; transition: background-color 0.2s;
-    }
-    .btn-shift.active { background-color: var(--danger); }
 
     .metrics-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -265,29 +243,6 @@
     .btn-page:hover:not(:disabled) { background: #e2e8f0; color: #0f172a; }
     .btn-page:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* ESTILOS DE MODALES DE GESTIÓN DE PERSONAL */
-    .modal-overlay {
-      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1000;
-      justify-content: center; align-items: center; padding: 16px;
-    }
-    .modal-card {
-      background: #ffffff; border-radius: 16px; width: 100%; max-width: 600px;
-      max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-      display: flex; flex-direction: column; gap: 16px; border: 1px solid var(--border);
-    }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-    .modal-title { font-size: 1.15rem; font-weight: 800; color: #1e293b; }
-    
-    .table-users { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.88rem; }
-    .table-users th, .table-users td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
-    .table-users th { background: #f8fafc; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.75rem; }
-    .table-users tr:hover { background: #f1f5f9; }
-
-    .btn-sm { padding: 6px 10px; font-size: 0.78rem; border-radius: 6px; border: none; font-weight: 700; cursor: pointer; }
-    .btn-sm.edit { background-color: #3b82f6; color: white; }
-    .btn-sm.delete { background-color: #ef4444; color: white; }
-
     .loading { text-align: center; padding: 40px; color: #64748b; font-size: 0.95rem; }
 
     @media (max-width: 640px) {
@@ -317,29 +272,20 @@
   <div class="container">
     <header>
       <div>
-        <h1>Panel GOBERNANTA </h1>
+        <h1>Panel GERENCIA </h1>
         <small id="fecha-gobernanta" style="color: #64748b;"></small>
       </div>
       <div class="header-actions">
         <button class="btn-gob red" onclick="detenerAlarmaContinua()">🔕 Silenciar Alarma</button>
-        <button class="btn-gob purple" onclick="abrirModalGestionPersonal()">👥 Gestionar Personal</button>
+        <button id="btnMutePerm" class="btn-gob red" onclick="toggleSilencioPermanente()">🔇 Audio Totalmente Silenciado</button>
         <button class="btn-gob purple" onclick="toggleFormNota()">➕ Crear Nota</button>
         <button class="btn-gob blue" onclick="cargarNotasGobernanta()">🔄 Actualizar</button>
       </div>
     </header>
 
-    <!-- PANEL CONTROL DE TURNO DE 8 HORAS -->
-    <div class="shift-panel">
-      <div id="timerDisplay" class="shift-timer">08:00:00</div>
-      <button type="button" id="btnShift" class="btn-shift" onclick="toggleTurno()">▶ INICIAR TURNO (8 HORAS)</button>
-      <div id="statusAlerts" style="font-size: 0.78rem; margin-top: 6px; color: #475569; font-weight: 700;">
-        Aviso de señal multimedia activa durante el turno.
-      </div>
-    </div>
-
     <!-- Formulario de creación de nota adaptativo -->
     <div id="formCrearNota" class="form-crear-card">
-      <h3>👑 Crear Nueva Solicitud de Gobernanta</h3>
+      <h3>🏢 Crear Nueva Solicitud de Gerencia</h3>
       <form id="formGobernantaNota">
         <div class="form-grid">
           <div class="form-group">
@@ -371,7 +317,7 @@
           <div class="form-group" id="groupGobMucama" style="display: none;">
             <label>Mucama Asignada:</label>
             <select id="gobMucamaNombre" class="input-form">
-              <option value="GOBERNANTA">👑 Gobernanta (Directo)</option>
+              <option value="GERENCIA">🏢 Gerencia (Directo)</option>
             </select>
           </div>
         </div>
@@ -498,85 +444,10 @@
 
   </div>
 
-  <!-- MODAL DE GESTIÓN DE PERSONAL -->
-  <div id="modalGestionPersonal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-header">
-        <span class="modal-title">👥 Gestión de Personal (Pestaña PERSONAL)</span>
-        <button type="button" class="btn-reset" onclick="cerrarModalGestionPersonal()" style="height: auto; padding: 4px 10px;">✖</button>
-      </div>
-
-      <!-- Formulario para agregar usuario -->
-      <form id="formAgregarUsuario" onsubmit="guardarNuevoUsuario(event)" style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
-        <strong style="font-size: 0.85rem; color: #334155; display: block; margin-bottom: 8px;">➕ Agregar Nuevo Empleado / Personal</strong>
-        <div class="form-grid" style="margin-bottom: 8px;">
-          <div class="form-group">
-            <label>Nombre y Apellido:</label>
-            <input type="text" id="nuevoUserNombre" class="input-form" placeholder="Ej: María López" required>
-          </div>
-          <div class="form-group">
-            <label>Rol / Sector:</label>
-            <select id="nuevoUserRol" class="input-form" required>
-              <option value="MUCAMAS">Mucama</option>
-              <option value="AREAS_PUBLICAS">Áreas Públicas</option>
-            </select>
-          </div>
-        </div>
-        <button type="submit" class="btn-gob purple" style="width: 100%;">💾 Guardar Nuevo Usuario</button>
-      </form>
-
-      <!-- Tabla de usuarios activos/inactivos -->
-      <div style="overflow-x: auto;">
-        <table class="table-users">
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Rol/Sector</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tbodyUsuarios">
-            <tr><td colspan="4" style="text-align: center;">Cargando lista de personal...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL PARA EDITAR / MODIFICAR NOMBRE DE USUARIO -->
-  <div id="modalEditarUsuario" class="modal-overlay" style="z-index: 1050;">
-    <div class="modal-card" style="max-width: 400px;">
-      <div class="modal-header">
-        <span class="modal-title">✏️ Modificar Usuario</span>
-        <button type="button" class="btn-reset" onclick="cerrarModalEditarUsuario()" style="height: auto; padding: 4px 10px;">✖</button>
-      </div>
-      <form id="formEditarUsuario" onsubmit="confirmarModificacionUsuario(event)">
-        <input type="hidden" id="editRowIndex">
-        <div class="form-group" style="margin-bottom: 12px;">
-          <label>Nombre Completo:</label>
-          <input type="text" id="editUserNombre" class="input-form" required>
-        </div>
-        <div class="form-group" style="margin-bottom: 16px;">
-          <label>Rol / Sector:</label>
-          <select id="editUserRol" class="input-form" required>
-            <option value="MUCAMAS">Mucama</option>
-            <option value="AREAS_PUBLICAS">Áreas Públicas</option>
-          </select>
-        </div>
-        <div style="display: flex; gap: 8px; justify-content: flex-end;">
-          <button type="button" class="btn-reset" onclick="cerrarModalEditarUsuario()" style="height: auto;">Cancelar</button>
-          <button type="submit" class="btn-gob blue">💾 Guardar Cambios</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script>
     var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzICY4EVygqbHyPyDG9xgNdA9_hiqLxW6Gr5JHDWtm91HhV6PdPozmQ1v29EtQ_wvsNQ/exec";
     var novedadesLocales = [];
     var todasNovedadesGeneral = []; 
-    var listaUsuariosCompleta = [];
     var estadoPestanaActiva = "PENDIENTE";
     
     var paginaActual = 1;
@@ -586,17 +457,11 @@
     var idsNotasConocidas = new Set();
     var primeraCargaRealizada = false;
 
-    /* VARIABLES DE CONTROL DE TURNO Y ALARMA */
-    var DURACION_TURNO_SEGUNDOS = 8 * 3600;
-    var ROL_ACTUAL = "GOBERNANTA";
-    var timerInterval = null;
-    var turnoActivo = false;
-    var timestampInicioServidor = null;
-
+    /* VARIABLES DE ALARMA Y CONTROL DE AUDIO */
     var audioCtx = null;
     var audioHTML5 = null;
     var audioDesbloqueado = false;
-    var silenciadoPermanente = localStorage.getItem('GOB_GOBERNANTA_SILENCIADO') === 'true';
+    var silenciadoPermanente = localStorage.getItem('GERENCIA_SILENCIADO') === 'true';
 
     var intervaloAlarmaRepetida = null;
     var tiempoLimiteAlarma = null;
@@ -632,128 +497,10 @@
       }, { once: false });
     });
 
-    /* LÓGICA DEL CONTROL DE TURNO DE 8 HORAS */
-    function sincronizarTurnoConServidor() {
-      fetch(SCRIPT_URL + "?action=obtenerEstadoTurno&rol=" + ROL_ACTUAL)
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.turnoActivo) {
-            timestampInicioServidor = parseInt(data.inicioTurno);
-            var ahora = new Date().getTime();
-            var segundosTranscurridos = Math.floor((ahora - timestampInicioServidor) / 1000);
-            var segundosRestantes = DURACION_TURNO_SEGUNDOS - segundosTranscurridos;
-
-            if (segundosRestantes > 0) {
-              iniciarMonitoreoLocal(segundosRestantes);
-            } else {
-              finalizarTurnoEnServidor();
-            }
-          } else {
-            apagarInterfazTurno();
-          }
-        })
-        .catch(err => console.log("Error al sincronizar turno:", err));
-    }
-
-    function toggleTurno() {
-      inicializarCanalMultimedia();
-
-      if (!turnoActivo) {
-        var params = new URLSearchParams({ action: "registrarInicioTurno", rol: ROL_ACTUAL });
-        fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params })
-          .then(res => res.json())
-          .then(data => {
-            timestampInicioServidor = parseInt(data.inicioTurno);
-            iniciarMonitoreoLocal(DURACION_TURNO_SEGUNDOS);
-          });
-      } else {
-        finalizarTurnoEnServidor();
-      }
-    }
-
-    function iniciarMonitoreoLocal(segundosRestantes) {
-      var btn = document.getElementById('btnShift');
-      var status = document.getElementById('statusAlerts');
-
-      turnoActivo = true;
-      if (btn) {
-        btn.innerText = "⏹ FINALIZAR TURNO PREMATURAMENTE";
-        btn.classList.add('active');
-      }
-      if (status) {
-        status.innerText = "🟢 Turno activo: Monitoreo continuo de notas activado.";
-        status.style.color = "#166534";
-      }
-
-      renderizarTiempo(segundosRestantes);
-
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(actualizarCronometroServidor, 1000);
-    }
-
-    function actualizarCronometroServidor() {
-      if (!timestampInicioServidor) return;
-
-      var ahora = new Date().getTime();
-      var segundosTranscurridos = Math.floor((ahora - timestampInicioServidor) / 1000);
-      var segundosRestantes = DURACION_TURNO_SEGUNDOS - segundosTranscurridos;
-
-      if (segundosRestantes <= 0) {
-        finalizarTurnoEnServidor();
-        alert("⏰ Han finalizado las 8 horas de tu turno de trabajo.");
-        return;
-      }
-
-      renderizarTiempo(segundosRestantes);
-    }
-
-    function renderizarTiempo(segundos) {
-      var hrs = Math.floor(segundos / 3600);
-      var mins = Math.floor((segundos % 3600) / 60);
-      var segs = segundos % 60;
-
-      var elem = document.getElementById('timerDisplay');
-      if (elem) {
-        elem.innerText = 
-          (hrs < 10 ? "0" + hrs : hrs) + ":" +
-          (mins < 10 ? "0" + mins : mins) + ":" +
-          (segs < 10 ? "0" + segs : segs);
-      }
-    }
-
-    function finalizarTurnoEnServidor() {
-      var params = new URLSearchParams({ action: "registrarFinTurno", rol: ROL_ACTUAL });
-      fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
-      apagarInterfazTurno();
-    }
-
-    function apagarInterfazTurno() {
-      turnoActivo = false;
-      timestampInicioServidor = null;
-      detenerAlarmaContinua();
-      
-      if (timerInterval) clearInterval(timerInterval);
-
-      var btn = document.getElementById('btnShift');
-      var status = document.getElementById('statusAlerts');
-
-      var elem = document.getElementById('timerDisplay');
-      if (elem) elem.innerText = "08:00:00";
-
-      if (btn) {
-        btn.innerText = "▶ INICIAR TURNO (8 HORAS)";
-        btn.classList.remove('active');
-      }
-      if (status) {
-        status.innerText = "🔴 Turno inactivo. Monitoreo detenido.";
-        status.style.color = "#991b1b";
-      }
-    }
-
     /* CONTROL DE AUDIO Y ALARMAS DE NOTIFICACIÓN */
     function toggleSilencioPermanente() {
       silenciadoPermanente = !silenciadoPermanente;
-      localStorage.setItem('GOB_GOBERNANTA_SILENCIADO', silenciadoPermanente);
+      localStorage.setItem('GERENCIA_SILENCIADO', silenciadoPermanente);
       actualizarBotonSilencio();
       if (silenciadoPermanente) detenerAlarmaContinua();
     }
@@ -762,10 +509,10 @@
       var btn = document.getElementById('btnMutePerm');
       if (btn) {
         if (silenciadoPermanente) {
-          btn.innerText = "🔇 Audio Desactivado";
+          btn.innerText = "🔊 Activar Audio";
           btn.className = "btn-gob muted";
         } else {
-          btn.innerText = "🔇 Audio Permanente";
+          btn.innerText = "🔇 Audio Totalmente Silenciado";
           btn.className = "btn-gob red";
         }
       }
@@ -835,7 +582,7 @@
     }
 
     function actualizarTituloContador(cantidad) {
-      var tituloBase = "Control Gobernanta";
+      var tituloBase = "Control Gerencia";
       if (cantidad > 0) {
         document.title = "(" + cantidad + ") 🚨 " + tituloBase;
       } else {
@@ -843,14 +590,13 @@
       }
     }
 
-    /* GESTIÓN DE PERSONAL / USUARIOS DESDE LA HOJA PERSONAL */
     function cargarUsuariosMucamaForm() {
       fetch(SCRIPT_URL + "?action=getUsuarios")
         .then(res => res.json())
         .then(data => {
           var selectMucama = document.getElementById('gobMucamaNombre');
           if (!selectMucama) return;
-          selectMucama.innerHTML = '<option value="GOBERNANTA">👑 Gobernanta (Directo)</option>';
+          selectMucama.innerHTML = '<option value="GERENCIA">🏢 Gerencia (Directo)</option>';
           if (data && data.mucamas) {
             data.mucamas.forEach(m => {
               var opt = document.createElement('option');
@@ -861,138 +607,6 @@
           }
         })
         .catch(err => console.log("Error al cargar usuarios mucamas:", err));
-    }
-
-    function abrirModalGestionPersonal() {
-      document.getElementById('modalGestionPersonal').style.display = 'flex';
-      cargarListaPersonalCompleta();
-    }
-
-    function cerrarModalGestionPersonal() {
-      document.getElementById('modalGestionPersonal').style.display = 'none';
-    }
-
-    function cargarListaPersonalCompleta() {
-      var tbody = document.getElementById('tbodyUsuarios');
-      tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Cargando usuarios...</td></tr>';
-
-      fetch(SCRIPT_URL + "?action=getListaPersonalCompleta")
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.personal) {
-            listaUsuariosCompleta = data.personal;
-            renderTablaUsuarios(listaUsuariosCompleta);
-          } else {
-            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay personal registrado.</td></tr>';
-          }
-        })
-        .catch(err => {
-          tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Error al obtener usuarios.</td></tr>';
-        });
-    }
-
-    function renderTablaUsuarios(lista) {
-      var tbody = document.getElementById('tbodyUsuarios');
-      if (lista.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay registros.</td></tr>';
-        return;
-      }
-
-      var html = '';
-      lista.forEach(u => {
-        var estadoBadge = u.estado === 'INACTIVO' ? '<span style="color:#ef4444; font-weight:bold;">INACTIVO</span>' : '<span style="color:#10b981; font-weight:bold;">ACTIVO</span>';
-        html += `
-          <tr>
-            <td><strong>${u.nombre}</strong></td>
-            <td>${u.rol}</td>
-            <td>${estadoBadge}</td>
-            <td>
-              <button class="btn-sm edit" onclick="abrirModalEditarUsuario(${u.rowIndex}, '${u.nombre}', '${u.rol}')">✏️ Editar</button>
-              ${u.estado !== 'INACTIVO' ? `<button class="btn-sm delete" onclick="desactivarUsuario('${u.nombre}')">🚫 Dar Baja</button>` : ''}
-            </td>
-          </tr>
-        `;
-      });
-      tbody.innerHTML = html;
-    }
-
-    function guardarNuevoUsuario(e) {
-      e.preventDefault();
-      var nombre = document.getElementById('nuevoUserNombre').value.trim();
-      var rol = document.getElementById('nuevoUserRol').value;
-
-      if (!nombre) return alert("Por favor ingresa un nombre.");
-
-      var params = new URLSearchParams({ action: "guardarUsuario", nombre: nombre, rol: rol });
-      fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "success") {
-            alert("Usuario guardado con éxito.");
-            document.getElementById('formAgregarUsuario').reset();
-            cargarListaPersonalCompleta();
-            cargarUsuariosMucamaForm();
-          } else {
-            alert("Error al guardar usuario: " + data.message);
-          }
-        });
-    }
-
-    function abrirModalEditarUsuario(rowIndex, nombre, rol) {
-      document.getElementById('editRowIndex').value = rowIndex;
-      document.getElementById('editUserNombre').value = nombre;
-      document.getElementById('editUserRol').value = rol;
-      document.getElementById('modalEditarUsuario').style.display = 'flex';
-    }
-
-    function cerrarModalEditarUsuario() {
-      document.getElementById('modalEditarUsuario').style.display = 'none';
-    }
-
-    function confirmarModificacionUsuario(e) {
-      e.preventDefault();
-      var rowIndex = document.getElementById('editRowIndex').value;
-      var nuevoNombre = document.getElementById('editUserNombre').value.trim();
-      var nuevoRol = document.getElementById('editUserRol').value;
-
-      if (!nuevoNombre) return alert("El nombre no puede estar vacío.");
-
-      var params = new URLSearchParams({
-        action: "modificarUsuario",
-        rowIndex: rowIndex,
-        nuevoNombre: nuevoNombre,
-        nuevoRol: nuevoRol
-      });
-
-      fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "success") {
-            alert("Usuario modificado exitosamente.");
-            cerrarModalEditarUsuario();
-            cargarListaPersonalCompleta();
-            cargarUsuariosMucamaForm();
-          } else {
-            alert("Error al modificar usuario: " + data.message);
-          }
-        });
-    }
-
-    function desactivarUsuario(nombre) {
-      if (!confirm(`¿Está seguro de que desea dar de baja al usuario "${nombre}"?`)) return;
-
-      var params = new URLSearchParams({ action: "eliminarUsuario", nombre: nombre });
-      fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params })
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "success") {
-            alert("Usuario dado de baja.");
-            cargarListaPersonalCompleta();
-            cargarUsuariosMucamaForm();
-          } else {
-            alert("Error al desactivar usuario: " + data.message);
-          }
-        });
     }
 
     function consultarServidor() {
@@ -1009,7 +623,7 @@
                 idsNotasConocidas.add(n.rowIndex);
                 if (primeraCargaRealizada && n.estado === 'PENDIENTE') {
                   var origen = normalizarTexto(n.mucama);
-                  if (origen !== 'GOBERNANTA') hayNuevaNotaDeMucamaOAreas = true;
+                  if (origen !== 'GERENCIA' && origen !== 'GOBERNANTA') hayNuevaNotaDeMucamaOAreas = true;
                 }
               }
             });
@@ -1041,7 +655,7 @@
             }
           }
         })
-        .catch(err => console.log("Error consultando Gobernanta :", err));
+        .catch(err => console.log("Error consultando Gerencia:", err));
     }
 
     function convertirTextoALinks(texto) {
@@ -1056,7 +670,6 @@
 
     window.onload = function() {
       actualizarBotonSilencio();
-      sincronizarTurnoConServidor();
       cargarNotasGobernanta();
       cargarUsuariosMucamaForm();
       cambiarSectorFormGobernanta();
@@ -1292,7 +905,7 @@
       lineas.forEach(linea => {
         var l = linea.trim();
         if (!l) return;
-        var esGobernanta = l.toUpperCase().includes('GOBERNANTA');
+        var esGobernanta = l.toUpperCase().includes('GOBERNANTA') || l.toUpperCase().includes('GERENCIA');
         var esMariana = l.toUpperCase().includes('MARIANA');
         var esNoSolucionado = l.toUpperCase().includes('NO SOLUCIONADO');
 
@@ -1324,7 +937,7 @@
       lineas.forEach(function(linea) {
         var textoFormateado = convertirTextoALinks(linea);
         var lUpper = linea.toUpperCase();
-        var esGobernanta = lUpper.includes('GOBERNANTA');
+        var esGobernanta = lUpper.includes('GOBERNANTA') || lUpper.includes('GERENCIA');
         var esMariana = lUpper.includes('MARIANA');
         var matchRespuesta = linea.match(/^↳?\s*\[(.*?)\]:\s*(.*)$/);
         
@@ -1403,7 +1016,7 @@
         var coincideSector = true;
         var esAreasPublicas = mucamaNorm.includes('AREAS PUBLICAS') || mucamaNorm.includes('AREA PUBLICA') || habNorm.includes('RESTO') || habNorm.includes('FLOTANTE') || habNorm.includes('CLIMATIZADA') || habNorm.includes('GYM') || habNorm.includes('TREBEJOS') || habNorm.includes('PARQUE');
         
-        if (selSector === 'MUCAMA') coincideSector = !esAreasPublicas && mucamaNorm !== 'GOBERNANTA';
+        if (selSector === 'MUCAMA') coincideSector = !esAreasPublicas && mucamaNorm !== 'GERENCIA' && mucamaNorm !== 'GOBERNANTA';
         else if (selSector === 'AREAS_PUBLICAS') coincideSector = esAreasPublicas;
 
         var coincideUbicacion = true;
@@ -1457,8 +1070,8 @@
         var badgeOrigen = '';
         var cardExtraClass = '';
 
-        if (mucamaNorm === 'GOBERNANTA') {
-          badgeOrigen = '<span class="badge-origen gob">👑 GOBERNANTA</span>';
+        if (mucamaNorm === 'GERENCIA' || mucamaNorm === 'GOBERNANTA') {
+          badgeOrigen = '<span class="badge-origen gob">🏢 GERENCIA</span>';
           cardExtraClass = 'es-gobernanta';
         } else if (esAP) {
           badgeOrigen = '<span class="badge-origen areas">🏛️ ÁREAS PÚBLICAS</span>';
@@ -1526,12 +1139,12 @@
       var nov = novedadesLocales.find(n => n.rowIndex === rowIndex);
       if (nov) {
         var fechaAhora = new Date().toLocaleDateString('es-ES') + " " + new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
-        var nuevaLinea = `↳ [${fechaAhora} - GOBERNANTA]: ${texto}`;
+        var nuevaLinea = `↳ [${fechaAhora} - GERENCIA]: ${texto}`;
         nov.historialRespuestas = nov.historialRespuestas ? (nov.historialRespuestas + "\n" + nuevaLinea) : nuevaLinea;
         renderNotasGobernanta();
       }
 
-      var params = new URLSearchParams({ action: "agregarRespuestaGobernancia", rowIndex: rowIndex, firma: "GOBERNANTA", texto: texto, esGobernanta: "true" });
+      var params = new URLSearchParams({ action: "agregarRespuestaGobernancia", rowIndex: rowIndex, firma: "GERENCIA", texto: texto, esGobernanta: "true" });
       fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
     }
 
@@ -1544,11 +1157,11 @@
         if (nuevoEstado === 'PENDIENTE' && nov.estado === 'SOLUCIONADO') {
           var tecnicoPrevio = nov.solucionadoPor || "TÉCNICO";
           var arregloPrevio = nov.detalleSolucion || "Sin detalle";
-          var marcaReactivacion = `❌ [${fechaAhora} - NO SOLUCIONADO]: Reactivado por Gobernanta. Intentado previamente por ${tecnicoPrevio} ("${arregloPrevio}")`;
+          var marcaReactivacion = `❌ [${fechaAhora} - NO SOLUCIONADO]: Reactivado por Gerencia. Intentado previamente por ${tecnicoPrevio} ("${arregloPrevio}")`;
           
           nov.historialRespuestas = nov.historialRespuestas ? (nov.historialRespuestas + "\n" + marcaReactivacion) : marcaReactivacion;
           
-          var paramsResp = new URLSearchParams({ action: "agregarRespuestaGobernancia", rowIndex: rowIndex, firma: "GOBERNANTA", texto: `❌ NO SOLUCIONADO: Reactivado. Intentado previamente por ${tecnicoPrevio} ("${arregloPrevio}")`, esGobernanta: "true" });
+          var paramsResp = new URLSearchParams({ action: "agregarRespuestaGobernancia", rowIndex: rowIndex, firma: "GERENCIA", texto: `❌ NO SOLUCIONADO: Reactivado. Intentado previamente por ${tecnicoPrevio} ("${arregloPrevio}")`, esGobernanta: "true" });
           fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: paramsResp });
 
           nov.detalleSolucion = "";
@@ -1559,7 +1172,7 @@
         renderNotasGobernanta();
       }
 
-      var params = new URLSearchParams({ action: "cambiarEstadoGobernancia", rowIndex: rowIndex, nuevoEstado: nuevoEstado, usuario: "GOBERNANTA" });
+      var params = new URLSearchParams({ action: "cambiarEstadoGobernancia", rowIndex: rowIndex, nuevoEstado: nuevoEstado, usuario: "GERENCIA" });
       fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
     }
 
@@ -1675,7 +1288,7 @@
       var item = todasNovedadesGeneral.find(function(n) { return n.rowIndex === rowIndex; });
       if (item) {
         var fechaAhora = new Date().toLocaleDateString('es-ES') + " " + new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
-        var nuevaLinea = "\n↳ [" + fechaAhora + " - GOBERNANTA]: " + texto;
+        var nuevaLinea = "\n↳ [" + fechaAhora + " - GERENCIA]: " + texto;
         item.detalle += nuevaLinea;
         buscarEnDeposito();
       }
@@ -1683,7 +1296,7 @@
       var params = new URLSearchParams({
         action: "agregarRespuesta",
         rowIndex: rowIndex,
-        nombreUsuario: "GOBERNANTA",
+        nombreUsuario: "GERENCIA",
         textoRespuesta: texto
       });
       fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
@@ -1695,7 +1308,7 @@
       if (!nov) return;
 
       var fechaAhora = new Date().toLocaleDateString('es-ES') + " " + new Date().toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'});
-      var textoEntrega = "✅ [ENTREGADO el " + fechaAhora + " por GOBERNANTA]";
+      var textoEntrega = "✅ [ENTREGADO el " + fechaAhora + " por GERENCIA]";
 
       nov.detalle += "\n\n" + textoEntrega;
       actualizarContadorPestanaDeposito();
@@ -1704,7 +1317,7 @@
       var params = new URLSearchParams({
         action: "agregarRespuesta",
         rowIndex: rowIndex,
-        nombreUsuario: "GOBERNANTA",
+        nombreUsuario: "GERENCIA",
         textoRespuesta: textoEntrega
       });
       fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
