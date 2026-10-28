@@ -1,10 +1,18 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="notranslate" translate="no">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="google" content="notranslate">
   <title>Control de Novedades - Gerencia</title>
   <meta name="theme-color" content="#8b5cf6">
+
+  <!-- Favicon e Iconos de la Aplicación -->
+  <link rel="icon" type="image/jpeg" sizes="192x192" href="logo.jpg">
+  <link rel="apple-touch-icon" href="logo.jpg">
+
+  <!-- Vinculación del Manifest PWA -->
+  <link rel="manifest" href="manifest.json">
 
   <style>
     :root {
@@ -1321,6 +1329,17 @@
         textoRespuesta: textoEntrega
       });
       fetch(SCRIPT_URL, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: params });
+    }
+  </script>
+
+  <!-- Registro del Service Worker para PWA -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js')
+          .then(function(reg) { console.log('Service Worker registrado', reg); })
+          .catch(function(err) { console.log('Error registrando Service Worker', err); });
+      });
     }
   </script>
 </body>
