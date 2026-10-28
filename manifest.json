@@ -3,14 +3,14 @@
   "name": "Control de Novedades - Gerencia",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-      "type": "image/png",
+      "src": "logo.jpg",
+      "type": "image/jpeg",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-      "type": "image/png",
+      "src": "logo.jpg",
+      "type": "image/jpeg",
       "sizes": "512x512",
       "purpose": "any maskable"
     }
